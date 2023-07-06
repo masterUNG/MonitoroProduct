@@ -6,6 +6,8 @@ import 'package:monitorproduct/utility/app_controller.dart';
 class AppService {
   AppController appController = Get.put(AppController());
 
+ 
+
   Future<void> readAllTypeUser() async {
     await FirebaseFirestore.instance.collection('typeuser').get().then((value) {
       for (var element in value.docs) {
