@@ -20,13 +20,18 @@ class _MainHomeUserState extends State<MainHomeUser> {
   @override
   void initState() {
     super.initState();
-    AppService().processFindPosition(context: context).then((value) {
-      Marker userMarker = Marker(
-          markerId: const MarkerId('user'),
-          position: LatLng(controller.positions.last.latitude,
-              controller.positions.last.longitude), infoWindow: const InfoWindow(title: 'คุณอยู่ที่นี่'),);
-      markers.add(userMarker);
-    });
+    AppService().processFindPosition(context: context);
+    AppService().readPositionRider(uidRider: 'oInxTW0ropPTgTm86C0mI1fm71p2');
+  }
+
+  void freshMarker() {
+    Marker userMarker = Marker(
+      markerId: const MarkerId('rider'),
+      position: LatLng(controller.positions.last.latitude,
+          controller.positions.last.longitude),
+      infoWindow: const InfoWindow(title: 'คุณอยู่ที่นี่'),
+    );
+    markers.add(userMarker);
   }
 
   @override
@@ -53,7 +58,14 @@ class _MainHomeUserState extends State<MainHomeUser> {
                           zoom: 16,
                         ),
                         onMapCreated: (controller) {},
-                        markers: markers.toSet(),
+                        markers: <Marker>[
+                          Marker(
+                              markerId: MarkerId('rider'),
+                              position: LatLng(
+                                  appController.riderGeopoints.last.latitude,
+                                  appController.riderGeopoints.last.longitude))
+                        ].toSet(),
+                        myLocationEnabled: true,
                       ),
                     );
             });

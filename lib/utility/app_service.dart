@@ -14,6 +14,17 @@ import 'package:monitorproduct/widget/widget_text_button.dart';
 class AppService {
   AppController appController = Get.put(AppController());
 
+  void readPositionRider({required String uidRider}) {
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(uidRider)
+        .snapshots()
+        .listen((event) {
+      UserModel userModel = UserModel.fromMap(event.data()!);
+      appController.riderGeopoints.add(userModel.geoPoint!);
+    });
+  }
+
   Future<void> processStreamPosition() async {
     var user = FirebaseAuth.instance.currentUser;
     UserModel userModel;

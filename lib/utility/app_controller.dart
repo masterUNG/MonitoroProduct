@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:monitorproduct/model/type_user_model.dart';
@@ -8,5 +9,6 @@ class AppController extends GetxController{
   RxList<String?> chooseTypeUsers = <String?>[null].obs;
 
   RxList<Position> positions = <Position>[].obs;
+  RxList<GeoPoint> riderGeopoints = <GeoPoint>[].obs;
   
 }
