@@ -1,16 +1,51 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:monitorproduct/model/type_user_model.dart';
+import 'package:monitorproduct/model/user_model.dart';
 import 'package:monitorproduct/utility/app_controller.dart';
 import 'package:monitorproduct/utility/app_dialog.dart';
 import 'package:monitorproduct/widget/widget_text_button.dart';
 
 class AppService {
   AppController appController = Get.put(AppController());
+
+  Future<void> processStreamPosition() async {
+    var user = FirebaseAuth.instance.currentUser;
+    UserModel userModel;
+    var snapshotDocument = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(user!.uid)
+        .get();
+    userModel = UserModel.fromMap(snapshotDocument.data()!);
+
+    LocationSettings locationSettings = const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 100,
+    );
+
+    Geolocator.getPositionStream(locationSettings: locationSettings)
+        .listen((event) async {
+      print('## event ---> $event');
+      print('## userModel ---> ${userModel.toMap()}');
+
+      GeoPoint geoPoint = GeoPoint(event.latitude, event.longitude);
+      Map<String, dynamic> map = userModel.toMap();
+      map['geoPoint'] = geoPoint;
+
+      await FirebaseFirestore.instance
+          .collection('user')
+          .doc(user.uid)
+          .update(map)
+          .then((value) {
+        print('## success geoPoint');
+      });
+    });
+  }
 
   Future<void> processFindPosition({required BuildContext context}) async {
     bool locationService = await Geolocator.isLocationServiceEnabled();
@@ -27,7 +62,6 @@ class AppService {
         //ไม่อนุญาติ
         dialogOpenPermission(context: context);
       } else {
-
         print('## locationPermission2 ---> $locationPermission');
 
         if (locationPermission == LocationPermission.denied) {
@@ -36,7 +70,6 @@ class AppService {
           print('## locationPermission3 ---> $locationPermission');
 
           locationPermission = await Geolocator.requestPermission();
-
 
           if ((locationPermission != LocationPermission.always) &&
               (locationPermission != LocationPermission.whileInUse)) {

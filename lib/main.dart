@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return GetMaterialApp(debugShowCheckedModeBanner: false,
       getPages: getPages,
       initialRoute: name,
       theme: ThemeData(useMaterial3: true),

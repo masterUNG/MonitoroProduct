@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class UserModel {
   final String email;
@@ -7,12 +9,14 @@ class UserModel {
   final String password;
   final String typeuser;
   final String uid;
+  final GeoPoint? geoPoint;
   UserModel({
     required this.email,
     required this.name,
     required this.password,
     required this.typeuser,
     required this.uid,
+     this.geoPoint,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,6 +26,7 @@ class UserModel {
       'password': password,
       'typeuser': typeuser,
       'uid': uid,
+      'geoPoint': geoPoint,
     };
   }
 
@@ -32,10 +37,12 @@ class UserModel {
       password: (map['password'] ?? '') as String,
       typeuser: (map['typeuser'] ?? '') as String,
       uid: (map['uid'] ?? '') as String,
+      geoPoint: map['geoPoint']  ?? const GeoPoint(0, 0),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory UserModel.fromJson(String source) =>
+      UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }
